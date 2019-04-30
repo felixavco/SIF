@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 if(process.env.NODE_ENV !== "production") require('dotenv').config()
+//* Importing DB connection
+import db from './database/db';
 
 
 //* Importing Routes
@@ -30,7 +32,15 @@ class Server {
 	}
 
 	public start(): void {
-    this.app.listen(this.PORT, () => console.log('Server started on port ' + this.PORT));
+		db  
+		.authenticate()
+		.then(() => {
+			console.log('Connection has been established successfully.');
+			this.app.listen(this.PORT, () => console.log('Server started on port ' + this.PORT));
+		})
+		.catch((err:Error) => {
+			console.error('Unable to connect to the database:', err);
+		});
 	}
 }
 
